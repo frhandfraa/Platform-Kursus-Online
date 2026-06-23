@@ -2,39 +2,37 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
-{
-    User::create([
-        'name' => 'Super Admin',
-        'email' => 'admin@platform.com',
-        'password' => bcrypt('password123'),
-        'role' => 'admin',
-        'is_active' => 1
-    ]);
+    public function run()
+    {
+        User::create([
+            'name' => 'Super Admin',
+            'email' => 'admin@platform.com',
+            'password' => Hash::make('password123'),  // <-- harus Hash::make
+            'role' => 'admin',
+            'is_active' => true
+        ]);
 
-    User::create([
-        'name' => 'John Doe',
-        'email' => 'guru@platform.com',
-        'password' => bcrypt('password123'),
-        'role' => 'instructor',
-        'is_active' => 1
-    ]);
+        // Tambahkan user lain jika perlu
+        User::create([
+            'name' => 'John Doe',
+            'email' => 'guru@platform.com',
+            'password' => Hash::make('password123'),
+            'role' => 'instructor',
+            'is_active' => true
+        ]);
 
-    User::create([
-        'name' => 'Student One',
-        'email' => 'murid@platform.com',
-        'password' => bcrypt('password123'),
-        'role' => 'student',
-        'is_active' => 1
-    ]);
-}
+        User::create([
+            'name' => 'Student One',
+            'email' => 'murid@platform.com',
+            'password' => Hash::make('password123'),
+            'role' => 'student',
+            'is_active' => true
+        ]);
+    }
 }

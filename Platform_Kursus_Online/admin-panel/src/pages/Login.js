@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import api from '../api/axios';
 import { useNavigate } from 'react-router-dom';
+import api from '../api/axios';
 
 const Login = () => {
   const [email, setEmail] = useState('admin@platform.com');
@@ -23,38 +23,35 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600">
-      <div className="bg-white p-8 rounded-2xl shadow-2xl w-96">
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-2">Admin LMS</h2>
-        <p className="text-center text-gray-500 mb-6">Masuk ke dashboard</p>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+      <div style={{ background: 'white', padding: '2rem', borderRadius: '8px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)', width: '350px' }}>
+        <h2 style={{ textAlign: 'center', marginBottom: '1rem' }}>Admin LMS</h2>
         <form onSubmit={handleSubmit}>
           <input
-            className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            style={{ width: '100%', padding: '10px', marginBottom: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
             required
           />
           <input
-            className="w-full p-3 border border-gray-300 rounded-lg mb-6 focus:outline-none focus:ring-2 focus:ring-blue-500"
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            style={{ width: '100%', padding: '10px', marginBottom: '10px', border: '1px solid #ccc', borderRadius: '4px' }}
             required
           />
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+            style={{ width: '100%', padding: '10px', background: '#4a6cf7', color: 'white', border: 'none', borderRadius: '4px', fontSize: '16px' }}
             disabled={loading}
           >
             {loading ? 'Memuat...' : 'Masuk'}
           </button>
         </form>
-        <p className="text-center text-xs text-gray-400 mt-4">
-          Default: admin@platform.com / password123
-        </p>
+        <p style={{ textAlign: 'center', marginTop: '10px', fontSize: '12px', color: '#888' }}>Default: admin@platform.com / password123</p>
       </div>
     </div>
   );

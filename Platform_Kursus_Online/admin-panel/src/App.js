@@ -1,24 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import Courses from './pages/Courses';
+import Users from './pages/Users';
+import Categories from './pages/Categories';
+import Modules from './pages/Modules';
+import Lessons from './pages/Lessons';
+import Quiz from './pages/Quiz';
+import Questions from './pages/Questions';
+import Settings from './pages/Settings';
+
+const PrivateRoute = ({ children }) => {
+  const token = localStorage.getItem('token');
+  return token ? children : <Navigate to="/login" />;
+};
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+        <Route path="/courses" element={<PrivateRoute><Courses /></PrivateRoute>} />
+        <Route path="/courses/:courseId/modules" element={<PrivateRoute><Modules /></PrivateRoute>} />
+        <Route path="/modules/:moduleId/lessons" element={<PrivateRoute><Lessons /></PrivateRoute>} />
+        <Route path="/lessons/:lessonId/quiz" element={<PrivateRoute><Quiz /></PrivateRoute>} />
+        <Route path="/quizzes/:quizId/questions" element={<PrivateRoute><Questions /></PrivateRoute>} />
+        <Route path="/users" element={<PrivateRoute><Users /></PrivateRoute>} />
+        <Route path="/categories" element={<PrivateRoute><Categories /></PrivateRoute>} />
+        <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
+        <Route path="*" element={<Navigate to="/dashboard" />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
