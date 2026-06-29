@@ -76,4 +76,8 @@ class LessonController extends Controller
         $lesson->delete();
         return response()->json(['message' => 'Deleted']);
     }
+    public function show(Lesson $lesson)
+    {
+        return response()->json($lesson);
+    }
 }

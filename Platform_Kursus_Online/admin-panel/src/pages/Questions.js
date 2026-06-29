@@ -13,6 +13,7 @@ const Questions = () => {
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(null);
+  const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
     question_text: '',
     type: 'multiple_choice',
@@ -23,9 +24,19 @@ const Questions = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchUser();
-    fetchQuiz();
-    fetchQuestions();
+    // Validasi quizId
+    if (!quizId || isNaN(quizId)) {
+      setError('ID kuis tidak valid');
+      setLoading(false);
+      return;
+    }
+    
+    const fetchData = async () => {
+      await fetchUser();
+      await fetchQuiz();
+      await fetchQuestions();
+    };
+    fetchData();
   }, [quizId]);
 
   const fetchUser = async () => {
@@ -38,21 +49,33 @@ const Questions = () => {
   };
 
   const fetchQuiz = async () => {
+    if (!quizId) return;
     try {
       const res = await api.get(`/api/quizzes/${quizId}`);
-      setQuiz(res.data);
+      if (res.data && res.data.id) {
+        setQuiz(res.data);
+      } else {
+        setError('Kuis tidak ditemukan');
+      }
     } catch (err) {
-      console.error(err);
+      console.error('Error fetch quiz:', err);
+      if (err.response?.status === 404) {
+        setError('Kuis tidak ditemukan');
+      } else {
+        setError('Gagal mengambil data kuis');
+      }
     }
   };
 
   const fetchQuestions = async () => {
+    if (!quizId) return;
     setLoading(true);
     try {
       const res = await api.get(`/api/quizzes/${quizId}/questions`);
-      setQuestions(res.data);
+      setQuestions(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
-      console.error(err);
+      console.error('Error fetch questions:', err);
+      setQuestions([]);
     } finally {
       setLoading(false);
     }
@@ -68,8 +91,8 @@ const Questions = () => {
     if (question) {
       setEditingQuestion(question);
       setFormData({
-        question_text: question.question_text,
-        type: question.type,
+        question_text: question.question_text || '',
+        type: question.type || 'multiple_choice',
         score: question.score || 1,
         sort_order: question.sort_order || 0,
         options: question.options?.length ? question.options : [{ option_text: '', is_correct: false }],
@@ -146,6 +169,30 @@ const Questions = () => {
     }
   };
 
+  // Jika ada error, tampilkan pesan
+  if (error) {
+    return (
+      <div className="flex h-screen bg-gray-100">
+        <Sidebar onLogout={handleLogout} />
+        <main className="flex-1 overflow-y-auto">
+          <Header user={user} />
+          <div className="p-6 text-center">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-2xl mx-auto">
+              <h2 className="text-xl font-bold text-red-700 mb-2">Error</h2>
+              <p className="text-red-600">{error}</p>
+              <button
+                onClick={() => navigate('/courses')}
+                className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Kembali ke Manajemen Kursus
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen bg-gray-100">
       <Sidebar onLogout={handleLogout} />
@@ -166,6 +213,10 @@ const Questions = () => {
           </div>
           {loading ? (
             <p>Memuat...</p>
+          ) : questions.length === 0 ? (
+            <div className="bg-white rounded-xl shadow-md p-6 text-center text-gray-500">
+              Belum ada soal. Tambahkan soal pertama!
+            </div>
           ) : (
             <div className="bg-white rounded-xl shadow-md overflow-hidden">
               <table className="w-full text-left">
@@ -175,7 +226,7 @@ const Questions = () => {
                     <th className="py-3 px-4">Soal</th>
                     <th className="py-3 px-4">Tipe</th>
                     <th className="py-3 px-4">Skor</th>
-                    <th className="py-3 px-4">Jumlah Opsi</th>
+                    <th className="py-3 px-4">Opsi</th>
                     <th className="py-3 px-4">Aksi</th>
                   </tr>
                 </thead>
