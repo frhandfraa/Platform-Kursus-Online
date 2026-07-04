@@ -7,6 +7,7 @@ const Sidebar = ({ onLogout }) => {
     { path: '/courses', icon: '📚', label: 'Kursus' },
     { path: '/users', icon: '👥', label: 'Pengguna' },
     { path: '/categories', icon: '🏷️', label: 'Kategori' },
+    { path: '/certificates', icon: '🎓', label: 'Sertifikat' }, // <-- tambahkan ini
     { path: '/settings', icon: '⚙️', label: 'Pengaturan' },
   ];
 

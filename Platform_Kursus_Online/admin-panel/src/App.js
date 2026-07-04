@@ -10,6 +10,7 @@ import Lessons from './pages/Lessons';
 import Quiz from './pages/Quiz';
 import Questions from './pages/Questions';
 import Settings from './pages/Settings';
+import Certificates from './pages/Certificates'; // <-- import
 
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -29,6 +30,7 @@ function App() {
         <Route path="/quizzes/:quizId/questions" element={<PrivateRoute><Questions /></PrivateRoute>} />
         <Route path="/users" element={<PrivateRoute><Users /></PrivateRoute>} />
         <Route path="/categories" element={<PrivateRoute><Categories /></PrivateRoute>} />
+        <Route path="/certificates" element={<PrivateRoute><Certificates /></PrivateRoute>} /> {/* <-- tambahkan */}
         <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
         <Route path="*" element={<Navigate to="/dashboard" />} />
       </Routes>

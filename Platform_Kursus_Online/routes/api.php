@@ -34,6 +34,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/admin/quizzes/{quiz}/reset-attempts', [QuizController::class, 'resetAttempts'])
         ->middleware('role:admin');
     Route::get('/lessons/{lesson}', [LessonController::class, 'show']);
+    Route::get('/certificates', [CertificateController::class, 'index']);
+    Route::post('/certificates/{enrollment}', [CertificateController::class, 'generate']);
+    Route::get('/certificates/{certificate}/download', [CertificateController::class, 'download']);
+     Route::get('/admin/certificates', [CertificateController::class, 'adminIndex']);
 
     // Course
     Route::apiResource('courses', CourseController::class);
@@ -93,8 +97,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/certificates/{enrollment}', [CertificateController::class, 'generate']);
     Route::get('/certificates/{certificate}/download', [CertificateController::class, 'download']);
     Route::post('/courses/{course}/thumbnail', [CourseController::class, 'uploadThumbnail']);
-
-    // Enrollment
+         // Enrollment
     Route::post('/enroll', [EnrollmentController::class, 'store']);
     Route::post('/enroll/{course}', [EnrollmentController::class, 'enroll']);
     Route::get('/my-courses', [EnrollmentController::class, 'myCourses']);
@@ -103,4 +106,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Progress & completion
     Route::post('/lessons/{lesson}/complete', [ProgressController::class, 'markComplete']);
     Route::get('/quizzes/{quiz}', [QuizController::class, 'show']);
+});
+
+Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    Route::get('/admin/certificates', [CertificateController::class, 'adminIndex']);
 });
