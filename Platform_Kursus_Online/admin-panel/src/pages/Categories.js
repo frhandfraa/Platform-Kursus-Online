@@ -32,9 +32,16 @@ const Categories = () => {
     setLoading(true);
     try {
       const res = await api.get('/api/categories');
-      setCategories(res.data);
+      // Pastikan response adalah array
+      if (Array.isArray(res.data)) {
+        setCategories(res.data);
+      } else {
+        console.error('Data kategori bukan array:', res.data);
+        setCategories([]);
+      }
     } catch (err) {
-      console.error(err);
+      console.error('Gagal ambil kategori:', err);
+      setCategories([]);
     } finally {
       setLoading(false);
     }

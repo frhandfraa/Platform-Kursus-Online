@@ -16,6 +16,18 @@ class CertificateController extends Controller
         return Certificate::where('user_id', Auth::id())->get();
     }
 
+    public function adminIndex()
+    {
+        // Pastikan user admin
+        if (Auth::user()->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        // Ambil semua sertifikat dengan relasi user dan course
+        $certificates = Certificate::with(['user', 'course'])->get();
+        return response()->json($certificates);
+    }
+
     public function generate(Enrollment $enrollment)
     {
         if ($enrollment->user_id !== Auth::id() && Auth::user()->role !== 'admin') {
@@ -53,10 +65,5 @@ class CertificateController extends Controller
             'message' => 'Fitur download sertifikat akan segera hadir',
             'certificate' => $certificate
         ]);
-    }
-
-    public function adminIndex()
-    {
-        return Certificate::with(['user', 'course'])->get();
     }
 }

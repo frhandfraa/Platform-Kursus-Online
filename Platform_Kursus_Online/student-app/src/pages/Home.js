@@ -22,6 +22,7 @@ const Home = () => {
   const fetchCourses = async () => {
     try {
       const res = await api.get('/api/courses');
+      // res.data sekarang array, karena response JSON
       setCourses(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error('Gagal fetch courses:', err);
@@ -32,11 +33,11 @@ const Home = () => {
   };
 
   const handleLogout = async () => {
-    try { await api.post('/api/logout'); } catch (e) {}
+    try { await api.post('/api/logout'); } catch (e) { }
     localStorage.clear();
     setIsLoggedIn(false);
     setUser(null);
-    window.location.href = '/'; // refresh ke home
+    window.location.href = '/';
   };
 
   return (
@@ -133,7 +134,7 @@ const Home = () => {
 
       <footer className="bg-gray-800 text-white py-8">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-sm opacity-75">© 2026 LMS Siswa. Dibuat dengan ❤️ untuk pendidikan.</p>
+          <p className="text-sm opacity-75">© 2026 Defalima Course. Dibuat dengan ❤️ untuk pendidikan.</p>
         </div>
       </footer>
     </>

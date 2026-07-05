@@ -14,7 +14,7 @@ const Sidebar = ({ onLogout }) => {
   return (
     <aside className="w-64 bg-indigo-800 text-white flex flex-col min-h-screen">
       <div className="p-4 border-b border-indigo-700">
-        <h1 className="text-2xl font-bold">LMS Admin</h1>
+        <h1 className="text-2xl font-bold">Defalima Course Admin</h1>
       </div>
       <nav className="flex-1 p-4 space-y-2">
         {menu.map((item) => (

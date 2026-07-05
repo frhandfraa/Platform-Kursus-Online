@@ -12,9 +12,15 @@ class CourseController extends Controller
 {
     public function index()
     {
+        // Jika tidak login, tampilkan hanya yang published
+        if (!Auth::check()) {
+            return Course::with('instructor')->where('is_published', true)->get();
+        }
+        // Jika login sebagai student, tampilkan yang published
         if (Auth::user()->role == 'student') {
             return Course::with('instructor')->where('is_published', true)->get();
         }
+        // Admin/instructor bisa lihat semua
         return Course::with('instructor')->get();
     }
 

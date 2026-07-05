@@ -27,7 +27,6 @@ const Login = () => {
   return (
     <>
       <Navbar isLoggedIn={false} />
-      {/* Hero Section dengan Background Gambar */}
       <div
         className="relative min-h-[calc(100vh-80px)] flex items-center justify-center p-4"
         style={{
@@ -36,13 +35,13 @@ const Login = () => {
           backgroundPosition: 'center',
         }}
       >
-        {/* Overlay Gelap agar form terbaca */}
+        {/* Overlay gelap agar form terbaca */}
         <div className="absolute inset-0 bg-black/50"></div>
 
         {/* Form Login */}
         <div className="relative z-10 bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
-          <h2 className="text-3xl font-bold text-center text-gray-800 mb-2">Login Siswa</h2>
-          <p className="text-center text-gray-500 mb-6">Masuk ke akun Anda</p>
+          <h2 className="text-3xl font-bold text-center text-gray-800 mb-2">Defalima Course</h2>
+          <p className="text-center text-gray-500 mb-6">Login Siswa</p>
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
