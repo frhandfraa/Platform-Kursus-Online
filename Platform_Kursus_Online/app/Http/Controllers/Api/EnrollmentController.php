@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Lesson;
+use App\Models\UserLessonProgress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 
 class EnrollmentController extends Controller
 {
@@ -70,7 +72,20 @@ class EnrollmentController extends Controller
         }
 
         $enrollment->load(['course.modules.lessons']);
-        return response()->json($enrollment);
+
+        // Ambil completed lessons dari user_lesson_progress
+        $completedLessons = UserLessonProgress::where('user_id', Auth::id())
+            ->whereIn('lesson_id', $enrollment->course->modules->flatMap->lessons->pluck('id'))
+            ->where('completed', true)
+            ->pluck('lesson_id');
+
+        return response()->json([
+            'id' => $enrollment->id,
+            'course' => $enrollment->course,
+            'progress_percent' => $enrollment->progress_percent,
+            'status' => $enrollment->status,
+            'completed_lessons' => $completedLessons,
+        ]);
     }
 
     /**

@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\EnrollmentController;
 use App\Http\Controllers\Api\LessonController;
 use App\Http\Controllers\Api\ModuleController;
+use App\Http\Controllers\Api\ProgressController;
 use App\Http\Controllers\Api\QuestionController;
 use App\Http\Controllers\Api\QuizAttemptController;
 use App\Http\Controllers\Api\QuizController;
@@ -34,9 +35,17 @@ Route::get('/courses', [CourseController::class, 'index']);
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
+
+    Route::post('/lessons/{lesson}/complete', [ProgressController::class, 'toggleComplete']);
+    Route::get('/enrollments/{enrollment}/progress', [ProgressController::class, 'getProgress']);
     // Auth
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
+
+    Route::get('/certificates', [CertificateController::class, 'index']);
+    Route::post('/certificates/{enrollment}', [CertificateController::class, 'generate']);
+    Route::get('/certificates/{certificate}/download', [CertificateController::class, 'download']);
+    Route::get('/admin/certificates', [CertificateController::class, 'adminIndex'])->middleware('role:admin');
 
     // Course (CRUD hanya untuk yang sudah login)
     Route::post('/courses', [CourseController::class, 'store']);

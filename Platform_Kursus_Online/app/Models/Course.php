@@ -39,4 +39,8 @@ class Course extends Model
     {
         return $this->hasMany(Certificate::class);
     }
+    public function totalLessons()
+    {
+        return $this->modules()->withCount('lessons')->get()->sum('lessons_count');
+    }
 }

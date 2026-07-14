@@ -36,10 +36,16 @@ class Enrollment extends Model
     {
         return $this->hasOne(Certificate::class);
     }
+
+    public function lessonCompletions()
+    {
+        return $this->hasMany(LessonCompletion::class);
+    }
+
     public function completedLessons()
     {
-        return $this->belongsToMany(Lesson::class, 'enrollment_lesson')
-            ->withPivot('is_completed')
-            ->withTimestamps();
+        return $this->belongsToMany(Lesson::class, 'lesson_completions', 'enrollment_id', 'lesson_id')
+            ->withTimestamps()
+            ->withPivot('completed_at');
     }
 }

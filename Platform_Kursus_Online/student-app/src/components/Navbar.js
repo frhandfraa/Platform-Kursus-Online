@@ -1,12 +1,25 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-const Navbar = ({ isLoggedIn, user, onLogout }) => {
+const Navbar = ({ isLoggedIn, user, onLogout, onNavigate }) => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     if (onLogout) await onLogout();
     navigate('/');
+  };
+
+  // Fungsi untuk navigasi internal (smooth scroll)
+  const handleNavClick = (sectionId) => {
+    if (onNavigate) {
+      onNavigate(sectionId);
+    } else {
+      // fallback jika onNavigate tidak diberikan
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
   };
 
   return (
@@ -16,9 +29,10 @@ const Navbar = ({ isLoggedIn, user, onLogout }) => {
           <span className="text-3xl">📚</span> Defalima Course
         </Link>
         <div className="hidden md:flex items-center gap-6 text-gray-600">
-          <Link to="/" className="hover:text-blue-600 transition">Beranda</Link>
-          <Link to="/#courses" className="hover:text-blue-600 transition">Kursus</Link>
-          <Link to="/#features" className="hover:text-blue-600 transition">Fitur</Link>
+          <button onClick={() => handleNavClick('beranda')} className="hover:text-blue-600 transition">Beranda</button>
+          <button onClick={() => handleNavClick('kursus')} className="hover:text-blue-600 transition">Kursus</button>
+          <button onClick={() => handleNavClick('fitur')} className="hover:text-blue-600 transition">Fitur</button>
+          <button onClick={() => handleNavClick('testimoni')} className="hover:text-blue-600 transition">Testimoni</button>
         </div>
         <div className="flex items-center gap-3">
           {isLoggedIn ? (

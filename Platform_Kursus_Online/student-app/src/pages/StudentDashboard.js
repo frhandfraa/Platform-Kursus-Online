@@ -25,24 +25,52 @@ const StudentDashboard = () => {
   }, [navigate]);
 
   const handleLogout = async () => {
-    try { await api.post('/api/logout'); } catch (e) { }
+    try { await api.post('/api/logout'); } catch (e) {}
     localStorage.clear();
     navigate('/login');
   };
 
-  // Fungsi download sertifikat
+  // Download Sertifikat - Final
   const handleDownloadCertificate = async (enrollmentId) => {
     try {
+      // 1. Generate
       const genRes = await api.post(`/api/certificates/${enrollmentId}`);
-      if (genRes.data && genRes.data.id) {
-        window.open(`http://localhost:8000/api/certificates/${genRes.data.id}/download`, '_blank');
+      if (!genRes.data?.id) {
+        alert('Gagal generate sertifikat');
+        return;
       }
+      const certId = genRes.data.id;
+
+      // 2. Download via fetch langsung ke backend (bawa token)
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://127.0.0.1:8000/api/certificates/${certId}/download`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/pdf',
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `sertifikat-${certId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
     } catch (err) {
-      alert(err.response?.data?.message || 'Gagal generate sertifikat');
+      console.error(err);
+      alert('Gagal download: ' + err.message);
     }
   };
 
-  // Hitung statistik
+  // Statistik
   const totalCourses = enrollments.length;
   const completed = enrollments.filter(e => e.status === 'completed').length;
   const active = enrollments.filter(e => e.status === 'active').length;
@@ -65,25 +93,13 @@ const StudentDashboard = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       {/* Header */}
       <div className="relative bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <svg className="absolute -top-20 -right-20 w-96 h-96 text-white" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" />
-          </svg>
-          <svg className="absolute -bottom-20 -left-20 w-96 h-96 text-white" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" />
-          </svg>
-        </div>
-
         <div className="relative container mx-auto px-6 py-10">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
               <h1 className="text-3xl md:text-4xl font-bold flex items-center gap-3">
                 <span>👋</span> Selamat Datang, {user?.name || 'Student'}!
               </h1>
-              <p className="text-blue-100 mt-1 flex items-center gap-2">
-                <span className="text-sm">🏠</span>
-                <span>Teruslah belajar dan raih impianmu!</span>
-              </p>
+              <p className="text-blue-100 mt-1">Teruslah belajar dan raih impianmu!</p>
             </div>
             <div className="flex items-center gap-3">
               <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg text-sm">
@@ -104,7 +120,7 @@ const StudentDashboard = () => {
       <div className="container mx-auto px-6 py-8">
         {/* Statistik Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
-          <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition transform hover:-translate-y-1 duration-300 border-l-4 border-blue-500">
+          <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition border-l-4 border-blue-500">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500 font-medium">Total Kursus</p>
@@ -115,8 +131,7 @@ const StudentDashboard = () => {
               </div>
             </div>
           </div>
-
-          <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition transform hover:-translate-y-1 duration-300 border-l-4 border-green-500">
+          <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition border-l-4 border-green-500">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500 font-medium">Selesai</p>
@@ -127,8 +142,7 @@ const StudentDashboard = () => {
               </div>
             </div>
           </div>
-
-          <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition transform hover:-translate-y-1 duration-300 border-l-4 border-yellow-500">
+          <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition border-l-4 border-yellow-500">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500 font-medium">Sedang Berjalan</p>
@@ -139,8 +153,7 @@ const StudentDashboard = () => {
               </div>
             </div>
           </div>
-
-          <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition transform hover:-translate-y-1 duration-300 border-l-4 border-purple-500">
+          <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition border-l-4 border-purple-500">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500 font-medium">Rata-rata Progress</p>
@@ -153,7 +166,7 @@ const StudentDashboard = () => {
           </div>
         </div>
 
-        {/* Banner Promo */}
+        {/* Banner */}
         <div className="bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl shadow-lg p-6 mb-8 text-white">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div>
@@ -168,15 +181,13 @@ const StudentDashboard = () => {
           </div>
         </div>
 
-        {/* Daftar Kursus Aktif */}
+        {/* Daftar Kursus */}
         <div>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
               <span>📖</span> Kursus Aktif
             </h2>
-            <Link to="/" className="text-blue-600 hover:underline text-sm font-medium">
-              Lihat Semua →
-            </Link>
+            <Link to="/" className="text-blue-600 hover:underline text-sm font-medium">Lihat Semua →</Link>
           </div>
 
           {enrollments.length === 0 ? (
@@ -193,6 +204,7 @@ const StudentDashboard = () => {
                 const isCompleted = enroll.status === 'completed' && enroll.progress_percent >= 100;
                 return (
                   <div key={enroll.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:-translate-y-2 duration-300">
+                    {/* Thumbnail */}
                     {enroll.course?.thumbnail ? (
                       <img
                         src={`http://localhost:8000/storage/${enroll.course.thumbnail}`}
@@ -204,12 +216,9 @@ const StudentDashboard = () => {
                         📚
                       </div>
                     )}
-
                     <div className="p-5">
                       <h3 className="text-xl font-semibold text-gray-800 truncate">{enroll.course?.title}</h3>
                       <p className="text-sm text-gray-500 mt-1">{enroll.course?.category || 'Tanpa Kategori'}</p>
-
-                      {/* Progress Bar */}
                       <div className="mt-3">
                         <div className="flex justify-between text-sm text-gray-600">
                           <span>Progress</span>
@@ -219,14 +228,12 @@ const StudentDashboard = () => {
                           <div
                             className={`h-2.5 rounded-full transition-all duration-1000 ${enroll.progress_percent >= 100 ? 'bg-green-500' : 'bg-blue-600'}`}
                             style={{ width: `${enroll.progress_percent}%` }}
-                          ></div>
+                          />
                         </div>
                       </div>
-
-                      {/* Status & Button */}
                       <div className="mt-4 flex justify-between items-center">
                         <span className={`text-xs px-3 py-1 rounded-full ${enroll.status === 'completed' ? 'bg-green-100 text-green-700' :
-                          enroll.status === 'active' ? 'bg-blue-100 text-blue-700' :
+                            enroll.status === 'active' ? 'bg-blue-100 text-blue-700' :
                             'bg-gray-100 text-gray-700'
                           }`}>
                           {enroll.status === 'completed' ? '✅ Selesai' :
